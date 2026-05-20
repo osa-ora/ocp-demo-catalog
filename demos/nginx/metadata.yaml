@@ -1,9 +1,0 @@
-name: nginx
-displayName: NGINX Demo
-description: Simple nginx deployment demo
-version: "1.0"
-category: web
-icon: nginx
-tags:
-  - web
-  - demo

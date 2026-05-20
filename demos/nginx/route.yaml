@@ -1,0 +1,8 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: nginx-demo
+spec:
+  to:
+    kind: Service
+    name: nginx-demo

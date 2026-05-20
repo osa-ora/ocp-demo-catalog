@@ -1,6 +1,6 @@
 apiVersion: demo.redhat.io/v1alpha1
 kind: DemoCatalog
-
+baseDemoUrl: https://raw.githubusercontent.com/osa-ora/ocp-demo-catalog/main
 demos:
   - name: nginx
     displayName: NGINX Demo

@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: httpd
-        image: registry.redhat.io/rhel8/httpd-24
+        image: httpd:2.4
         ports:
         - containerPort: 8080

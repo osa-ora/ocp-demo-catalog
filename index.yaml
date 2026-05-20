@@ -18,3 +18,4 @@ demos:
     manifests:
       - deployment.yaml
       - service.yaml
+      - route.yaml

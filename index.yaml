@@ -1,6 +1,20 @@
+apiVersion: demo.redhat.io/v1alpha1
+kind: DemoCatalog
+
 demos:
   - name: nginx
-    path: demos/nginx
+    displayName: NGINX Demo
+    description: Simple nginx web server
+    namespace: nginx-demo
+    manifests:
+      - deployment.yaml
+      - service.yaml
+      - route.yaml
 
   - name: httpd
-    path: demos/httpd
+    displayName: Apache HTTPD Demo
+    description: Simple Apache deployment
+    namespace: httpd-demo
+    manifests:
+      - deployment.yaml
+      - service.yaml

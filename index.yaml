@@ -1,0 +1,6 @@
+demos:
+  - name: nginx
+    path: demos/nginx
+
+  - name: httpd
+    path: demos/httpd

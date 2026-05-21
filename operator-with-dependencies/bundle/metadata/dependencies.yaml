@@ -1,0 +1,11 @@
+dependencies:
+  - type: olm.package
+    value:
+      packageName: openshift-gitops-operator
+      channel: stable
+
+  - type: olm.gvk
+    value:
+      group: argoproj.io
+      version: v1beta1
+      kind: Application

@@ -1,0 +1,32 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: manager-role
+rules:
+- apiGroups:
+  - demo.osa.ora
+  resources:
+  - demorequests
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - demo.osa.ora
+  resources:
+  - demorequests/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - demo.osa.ora
+  resources:
+  - demorequests/status
+  verbs:
+  - get
+  - patch
+  - update

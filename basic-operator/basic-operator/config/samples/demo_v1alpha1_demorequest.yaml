@@ -1,0 +1,9 @@
+apiVersion: demo.osa.ora/v1alpha1
+kind: DemoRequest
+metadata:
+  labels:
+    app.kubernetes.io/name: osaora-demo-operator
+    app.kubernetes.io/managed-by: kustomize
+  name: demorequest-sample
+spec:
+  # TODO(user): Add fields here

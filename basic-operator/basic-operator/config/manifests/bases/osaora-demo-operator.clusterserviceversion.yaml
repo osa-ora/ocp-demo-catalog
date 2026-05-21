@@ -1,0 +1,50 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  annotations:
+    alm-examples: '[]'
+    capabilities: Basic Install
+  name: osaora-demo-operator.v0.0.0
+  namespace: placeholder
+spec:
+  apiservicedefinitions: {}
+  customresourcedefinitions:
+    owned:
+    - description: DemoRequest is the Schema for the demorequests API.
+      displayName: Demo Request
+      kind: DemoRequest
+      name: demorequests.demo.osa.ora
+      version: v1alpha1
+  description: Install OCP Demos from GitHub
+  displayName: OsaOra Demo Operator
+  icon:
+  - base64data: ""
+    mediatype: ""
+  install:
+    spec:
+      deployments: null
+    strategy: ""
+  installModes:
+  - supported: false
+    type: OwnNamespace
+  - supported: false
+    type: SingleNamespace
+  - supported: false
+    type: MultiNamespace
+  - supported: true
+    type: AllNamespaces
+  keywords:
+  - OCP Demos
+  - Osa
+  - Ora
+  links:
+  - name: Osaora Demo Operator
+    url: https://osaora-demo-operator.domain
+  maintainers:
+  - email: osa_ora@yahoo.com
+    name: Osama Oransa
+  maturity: alpha
+  provider:
+    name: Osama Oransa
+    url: https://github.com/osa-ora
+  version: 0.0.0

@@ -5,7 +5,7 @@ metadata:
   namespace: openshift-marketplace
 spec:
   sourceType: grpc
-  image: quay.io/ooransa/osaora-demo-operator-bundle:v0.0.1
+  image: quay.io/ooransa/osaora-demo-operator-index:v0.0.1
   displayName: Demo Request Operator
   publisher: Osama Oransa
   updateStrategy:

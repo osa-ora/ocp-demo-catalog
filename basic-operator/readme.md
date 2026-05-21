@@ -192,6 +192,9 @@ make bundle
 
 Prepare PNG image:
 
+<img width="128" height="128" alt="operator" src="https://github.com/user-attachments/assets/d5fa6039-1ada-46a2-a19e-6eaf92142878" />
+
+
 * 64x64 OR 128x128
 
 Convert to base64:
@@ -270,7 +273,7 @@ clusterPermissions:
           - delete
 ```
 
-⚠ Without this, the operator cannot manage Deployments.
+⚠ Without this, the operator cannot manage Deployments or others object, so add all objects you need or just grant permissions later on as in file role.yaml.
 
 ---
 

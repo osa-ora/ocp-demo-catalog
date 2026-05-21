@@ -1,5 +1,4 @@
-# ocp-demo-catalog
-Catalog of OCP demos for the Demo Operator
+# OpenShift Demo Operator
 
 In this demo, we built an operator who consumes index.ymal file which contains the list of demos available and there metadata, and if the user request a demo, it generates the demo artifacts.
 
@@ -28,6 +27,12 @@ And now all demo request resources are related to that request and will be delet
 <img width="923" height="416" alt="Screenshot 2026-05-21 at 2 50 30 PM" src="https://github.com/user-attachments/assets/ac296fcf-9288-4562-8723-f91a6796e726" />
 
 
+To add more demos, insert them into index.yaml file.
+
+The 3 operator public images are located at: quay.io/ooransa/osaora-demo-operator:v0.0.2, quay.io/ooransa/osaora-demo-operator-index:v0.0.2
+and quay.io/ooransa/osaora-demo-operator-bundle:v0.0.2
+
+<img width="396" height="139" alt="Screenshot 2026-05-21 at 3 19 12 PM" src="https://github.com/user-attachments/assets/71d3e42c-1feb-4276-9790-bd2cf92999de" />
 
 
 

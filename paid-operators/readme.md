@@ -39,7 +39,7 @@ spec:
             template:
               spec:
                 imagePullSecrets:
-                  - name: quay-secret
+                  - name: demo-operator-quay-secret
 ```
 
 ---
@@ -112,7 +112,7 @@ spec:
 This will be based on customer subscription..
 
 ```bash
-oc create secret docker-registry quay-secret \
+oc create secret docker-registry demo-operator-quay-secret \
   --docker-server=quay.io \
   --docker-username=USERNAME \
   --docker-password=TOKEN \
@@ -127,7 +127,7 @@ oc create secret docker-registry quay-secret \
 ```bash
 oc secrets link \
   osaora-demo-operator-controller-manager \
-  quay-secret \
+  demo-operator-quay-secret \
   --for=pull \
   -n demos
 ```

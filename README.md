@@ -51,6 +51,9 @@ And now all demo request resources are related to that request and will be delet
 
 <img width="923" height="416" alt="Screenshot 2026-05-21 at 2 50 30 PM" src="https://github.com/user-attachments/assets/ac296fcf-9288-4562-8723-f91a6796e726" />
 
+And you can now see these apps up and running at the topology view:
+
+<img width="568" height="322" alt="Screenshot 2026-05-22 at 4 48 42 PM" src="https://github.com/user-attachments/assets/1535b004-c975-47bd-8f06-8e4ae6f23725" />
 
 To add more demos, insert them into index.yaml file.
 

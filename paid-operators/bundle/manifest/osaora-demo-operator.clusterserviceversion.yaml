@@ -21,7 +21,7 @@ metadata:
     createdAt: "2026-05-21T06:41:54Z"
     operators.operatorframework.io/builder: operator-sdk-v1.42.2
     operators.operatorframework.io/project_layout: go.kubebuilder.io/v4
-  name: osaora-demo-operator.v0.0.2
+  name: osaora-demo-operator.v0.0.3
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -108,7 +108,7 @@ spec:
                 - --health-probe-bind-address=:8081
                 command:
                 - /manager
-                image: quay.io/ooransa/osaora-demo-operator:v0.0.2
+                image: quay.io/ooransa/osaora-demo-operator:v0.0.3
                 livenessProbe:
                   httpGet:
                     path: /healthz
@@ -200,4 +200,4 @@ spec:
   provider:
     name: Osama Oransa
     url: https://github.com/osa-ora
-  version: 0.0.2
+  version: 0.0.3

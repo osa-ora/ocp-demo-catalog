@@ -1,9 +1,33 @@
 # OpenShift Demo Operator
 ---
 
-In this demo, we built an operator who consumes index.ymal file which contains the list of demos available and there metadata, and if the user request a demo, it generates the demo artifacts.
+In this demo, we built an operator that consumes an `index.yaml` file containing the list of available demos and their metadata. When the user requests a demo, the operator generates the required demo artifacts.
 
-Once, installed as per the file: basitc-operator/definition.yaml
+Once installed using the file `basic-operator/definition.yaml`:
+
+```
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: demo-operator-catalog
+  namespace: openshift-marketplace
+spec:
+  sourceType: grpc
+  image: quay.io/ooransa/osaora-demo-operator-index:v0.0.2
+  displayName: Demo Request Operator
+  publisher: Osama Oransa
+  updateStrategy:
+    registryPoll:
+      interval: 10m
+```
+
+Either run
+
+```
+oc apply -f https://raw.githubusercontent.com/osa-ora/ocp-demo-catalog/refs/heads/main/basic-operator/definition.yaml
+```
+
+Or add it using OpenShift Console.
 
 The operator will be available in the software catalog in OpenShift GUI:
 
@@ -110,4 +134,18 @@ Controller Image (runtime container)
 | Controller | Runtime app     | “Installed software binary”     |
 
 ---
+
+## 🔁 Additional Demos
+
+There is another demo in the folder `operator-with-dependencies` that demonstrates how to add prerequisite operators as dependencies.
+
+Also, the folder `paid-operator` contains a demonstration of how to implement a subscription model for your operator. There are many ways to achieve this, but we demonstrated a simple approach.
+
+
+
+
+
+
+
+
 

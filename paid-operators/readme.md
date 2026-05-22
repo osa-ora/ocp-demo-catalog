@@ -155,6 +155,9 @@ Make sure the imagePullSecret exists in namespace "demos" before the operator de
 ---
 
 By doing this you simplify the subscription with your customers to use the operator, you can also have another logic inside the controller if you want to control the number of resources granted for the customer.
+
+At any point, you can terminate the pull secret access to your repository.
+
 Note: This is not a real billing mechanism. It is an access-control model based on private registry authentication.
 
 

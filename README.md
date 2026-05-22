@@ -1,4 +1,5 @@
 # OpenShift Demo Operator
+---
 
 In this demo, we built an operator who consumes index.ymal file which contains the list of demos available and there metadata, and if the user request a demo, it generates the demo artifacts.
 
@@ -35,4 +36,78 @@ and quay.io/ooransa/osaora-demo-operator-bundle:v0.0.2
 <img width="396" height="139" alt="Screenshot 2026-05-21 at 3 19 12 PM" src="https://github.com/user-attachments/assets/71d3e42c-1feb-4276-9790-bd2cf92999de" />
 
 
+# To clarify the different images
+---
+
+## 1. Index image (CatalogSource)
+
+**Purpose: discovery layer**
+
+```text id="1"
+CatalogSource → OLM reads index image → finds packages/channels/versions
+```
+
+It contains:
+
+* package metadata
+* channels (stable, beta, etc.)
+* references to bundles
+
+It does **NOT contain runtime logic**
+
+## 2. Bundle image
+
+**Purpose: “versioned operator definition unit”**
+
+A bundle contains:
+
+* CSV (ClusterServiceVersion)
+* CRDs
+* metadata (package manifests)
+* RBAC manifests
+
+```text id="2"
+bundle = single operator version definition
+```
+
+Think of it as:
+
+> 📦 “Installable version snapshot of the operator”
+
+## 3. Controller image
+
+**Purpose: runtime execution**
+
+```text id="3"
+Deployment → runs /manager → reconciler logic
+```
+
+This is:
+
+* your Go binary
+* actual operator behavior
+
+---
+
+## 🔁 How they connect
+
+```text id="4"
+Index Image
+   ↓ points to
+Bundle Image (v0.0.3)
+   ↓ defines
+CSV
+   ↓ references
+Controller Image (runtime container)
+```
+
+## 🧠 Simple mental model
+
+| Component  | Role            | Analogy                         |
+| ---------- | --------------- | ------------------------------- |
+| Index      | Catalog         | “App Store listing page”        |
+| Bundle     | Version package | “Installer package (.rpm/.deb)” |
+| Controller | Runtime app     | “Installed software binary”     |
+
+---
 

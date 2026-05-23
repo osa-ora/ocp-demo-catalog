@@ -18,6 +18,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/yaml"
 
+	"k8s.io/client-go/tools/record"
 	demov1alpha1 "osa.ora/demo-operator/api/v1alpha1"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -42,23 +43,22 @@ type DemoEntry struct {
 const catalogURL = "https://raw.githubusercontent.com/osa-ora/ocp-demo-catalog/main/index.yaml"
 
 // ---------------- cached catalog ----------------
-
 type cachedCatalog struct {
 	data      Catalog
 	fetchedAt time.Time
 }
 
+// caching
 var (
 	catalogCache cachedCatalog
 	cacheMutex   sync.RWMutex
 	cacheTTL     = 5 * time.Minute
 )
 
-// ---------------- reconciler ----------------
-
 type DemoRequestReconciler struct {
 	client.Client
 	Scheme     *runtime.Scheme
+	Recorder   record.EventRecorder
 	HTTPClient *http.Client
 }
 
@@ -80,6 +80,13 @@ func (r *DemoRequestReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 	}
 
 	log.Info("Received DemoRequest", "demo", demoReq.Spec.DemoName)
+	//fire event ...
+	r.emitEvent(
+		&demoReq,
+		corev1.EventTypeNormal,
+		"Reconciling",
+		"Starting reconciliation for demo "+demoReq.Spec.DemoName,
+	)
 
 	// ---------------- STATUS: APPLYING ----------------
 	if err := r.patchStatus(ctx, &demoReq, func(s *demov1alpha1.DemoRequestStatus) {
@@ -92,6 +99,13 @@ func (r *DemoRequestReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 	// ---------------- FETCH CATALOG (CACHED) ----------------
 	catalog, err := r.getCatalog()
 	if err != nil {
+		//fire event first
+		r.emitEvent(
+			&demoReq,
+			corev1.EventTypeWarning,
+			"CatalogFetchFailed",
+			err.Error(),
+		)
 		_ = r.patchStatus(ctx, &demoReq, func(s *demov1alpha1.DemoRequestStatus) {
 			s.Phase = "Retrying"
 			s.Message = err.Error()
@@ -109,6 +123,13 @@ func (r *DemoRequestReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 	}
 
 	if selected == nil {
+		//fire event first
+		r.emitEvent(
+			&demoReq,
+			corev1.EventTypeWarning,
+			"DemoNotFound",
+			fmt.Sprintf("demo %s not found in catalog", demoReq.Spec.DemoName),
+		)
 		_ = r.patchStatus(ctx, &demoReq, func(s *demov1alpha1.DemoRequestStatus) {
 			s.Phase = "Failed"
 			s.Message = "demo not found"
@@ -120,7 +141,13 @@ func (r *DemoRequestReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 		"name", selected.Name,
 		"manifests", selected.Manifests,
 		"baseURL", catalog.BaseDemoURL)
-
+	//fire event now
+	r.emitEvent(
+		&demoReq,
+		corev1.EventTypeNormal,
+		"DemoSelected",
+		selected.Name,
+	)
 	// ---------------- RESOLVE NAMESPACE ----------------
 	targetNamespace := demoReq.Spec.Namespace
 	if targetNamespace == "" {
@@ -128,6 +155,13 @@ func (r *DemoRequestReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 	}
 
 	if targetNamespace == "" {
+		//fire event first
+		r.emitEvent(
+			&demoReq,
+			corev1.EventTypeWarning,
+			"InvalidNamespace",
+			"namespace is required but not provided",
+		)
 		_ = r.patchStatus(ctx, &demoReq, func(s *demov1alpha1.DemoRequestStatus) {
 			s.Phase = "Failed"
 			s.Message = "namespace must be defined"
@@ -137,6 +171,13 @@ func (r *DemoRequestReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 
 	// ---------------- ENSURE NAMESPACE ----------------
 	if err := r.ensureNamespace(ctx, targetNamespace); err != nil {
+		//fire event first
+		r.emitEvent(
+			&demoReq,
+			corev1.EventTypeWarning,
+			"NamespaceEnsureFailed",
+			err.Error(),
+		)
 		_ = r.patchStatus(ctx, &demoReq, func(s *demov1alpha1.DemoRequestStatus) {
 			s.Phase = "Retrying"
 			s.Message = err.Error()
@@ -152,6 +193,13 @@ func (r *DemoRequestReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 			file,
 		)
 		if err != nil {
+			//fire event first
+			r.emitEvent(
+				&demoReq,
+				corev1.EventTypeWarning,
+				"ManifestFetchFailed",
+				fmt.Sprintf("file=%s error=%s", file, err.Error()),
+			)
 			_ = r.patchStatus(ctx, &demoReq, func(s *demov1alpha1.DemoRequestStatus) {
 				s.Phase = "Retrying"
 				s.Message = err.Error()
@@ -160,6 +208,13 @@ func (r *DemoRequestReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 		}
 
 		if err := r.applyManifest(ctx, data, targetNamespace, &demoReq); err != nil {
+			//fire event first
+			r.emitEvent(
+				&demoReq,
+				corev1.EventTypeWarning,
+				"ManifestApplyFailed",
+				err.Error(),
+			)
 			_ = r.patchStatus(ctx, &demoReq, func(s *demov1alpha1.DemoRequestStatus) {
 				s.Phase = "Retrying"
 				s.Message = err.Error()
@@ -171,13 +226,18 @@ func (r *DemoRequestReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 	// ---------------- READY ----------------
 	if err := r.patchStatus(ctx, &demoReq, func(s *demov1alpha1.DemoRequestStatus) {
 		s.Phase = "Ready"
-		s.Message = "demo deployed successfully"
+		s.Message = "Demo is now Ready!"
 	}); err != nil {
 		return ctrl.Result{}, err
 	}
 
 	log.Info("Demo deployed", "demo", selected.Name)
-
+	r.emitEvent(
+		&demoReq,
+		corev1.EventTypeNormal,
+		"Reconciled",
+		"Demo deployed successfully!",
+	)
 	return ctrl.Result{}, nil
 }
 
@@ -399,11 +459,11 @@ func (r *DemoRequestReconciler) applyManifest(
 
 			exists := false
 
-			for _, r := range updated.Status.Resources {
-				if r.APIVersion == ref.APIVersion &&
-					r.Kind == ref.Kind &&
-					r.Name == ref.Name &&
-					r.Namespace == ref.Namespace {
+			for _, res := range updated.Status.Resources {
+				if res.APIVersion == ref.APIVersion &&
+					res.Kind == ref.Kind &&
+					res.Name == ref.Name &&
+					res.Namespace == ref.Namespace {
 
 					exists = true
 					break
@@ -555,6 +615,23 @@ func (r *DemoRequestReconciler) ensureNamespace(
 	return fmt.Errorf(
 		"namespace %s not ready after creation",
 		name,
+	)
+}
+
+// event recorder
+func (r *DemoRequestReconciler) emitEvent(
+	obj *demov1alpha1.DemoRequest,
+	eventType, reason, message string,
+) {
+	if r.Recorder == nil || obj == nil {
+		return
+	}
+
+	r.Recorder.Event(
+		obj,
+		eventType,
+		reason,
+		message,
 	)
 }
 

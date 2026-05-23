@@ -72,6 +72,12 @@ Once installed successfully:
 
 <img width="543" height="253" alt="Screenshot 2026-05-21 at 2 49 29 PM" src="https://github.com/user-attachments/assets/a57576c2-9c04-4e22-8ff3-43e0efa93bda" />
 
+First execute the ClusterRoleBinding (as i didn't add them in the CSR file): 
+
+```
+oc apply -f https://raw.githubusercontent.com/osa-ora/ocp-demo-catalog/refs/heads/main/basic-operator/role.yaml
+```
+
 Then you can go ahead and create the demo requests:
 
 <img width="1253" height="665" alt="Screenshot 2026-05-21 at 2 49 39 PM" src="https://github.com/user-attachments/assets/693bfbbc-bcfe-4559-ae23-c0f9c3fa243b" />
@@ -80,9 +86,13 @@ Currently the index.yaml file contains 2 demos, you need to select one: either n
 
 <img width="1025" height="608" alt="Screenshot 2026-05-21 at 2 50 08 PM" src="https://github.com/user-attachments/assets/938a2d0f-d6f0-47d8-85e1-3a56ff320ea1" />
 
-And now all demo request resources are related to that request and will be deleted once this demo request is deleted.
+And now all demo request resources are related to that demo request and will be deleted once this demo request is deleted.
 
 <img width="923" height="416" alt="Screenshot 2026-05-21 at 2 50 30 PM" src="https://github.com/user-attachments/assets/ac296fcf-9288-4562-8723-f91a6796e726" />
+
+Also added all needed events as per deployment progress:
+
+<img width="1195" height="541" alt="Screenshot 2026-05-23 at 12 04 18 PM" src="https://github.com/user-attachments/assets/ad62cca7-ba77-4f7a-96a0-eb418c9eda00" />
 
 And you can now see these apps up and running at the topology view:
 

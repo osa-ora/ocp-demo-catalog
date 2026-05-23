@@ -181,6 +181,10 @@ Controller Image (runtime container)
 
 ---
 
+## 🔁 More Details of how to build the Operator
+
+Check: basic-operator/readme.md
+
 ## 🔁 Additional Demos
 
 There is another demo in the folder `operator-with-dependencies` that demonstrates how to add prerequisite operators as dependencies.

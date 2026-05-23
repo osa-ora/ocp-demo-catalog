@@ -1,9 +1,35 @@
 # OpenShift Demo Operator
 ---
 
-In this demo, we built an operator that consumes an `index.yaml` file containing the list of available demos and their metadata. When the user requests a demo, the operator generates the required demo artifacts.
+In this demo, we built an operator that consumes an `index.yaml` file containing the list of available demos and their metadata. When the user requests a demo, the operator generates the required demo artifacts, based on the demo details as per the file content: 
 
-Once installed using the file `basic-operator/definition.yaml`:
+```
+apiVersion: demo.redhat.io/v1alpha1
+kind: DemoCatalog
+baseDemoUrl: https://raw.githubusercontent.com/osa-ora/ocp-demo-catalog/main/demos
+demos:
+  - name: nginx
+    displayName: NGINX Demo
+    description: Simple nginx web server
+    namespace: nginx-demo
+    manifests:
+      - deployment.yaml
+      - service.yaml
+      - route.yaml
+
+  - name: httpd
+    displayName: Apache HTTPD Demo
+    description: Simple Apache deployment
+    namespace: httpd-demo
+    manifests:
+      - deployment.yaml
+      - service.yaml
+      - route.yaml
+```
+
+I will add in that file more custom demos for OpenShift in the future.
+
+To install the operatot, you can either use the file `basic-operator/definition.yaml`:
 
 ```
 apiVersion: operators.coreos.com/v1alpha1
@@ -21,13 +47,13 @@ spec:
       interval: 10m
 ```
 
-Either run
+And run:
 
 ```
 oc apply -f https://raw.githubusercontent.com/osa-ora/ocp-demo-catalog/refs/heads/main/basic-operator/definition.yaml
 ```
 
-Or add it using OpenShift Console.
+Or add it using OpenShift Console (+) icon and select YAML file.
 
 The operator will be available in the software catalog in OpenShift GUI:
 
@@ -37,13 +63,20 @@ Then select it and install it:
 
 <img width="360" height="535" alt="Screenshot 2026-05-21 at 2 39 35 PM" src="https://github.com/user-attachments/assets/d151c844-0530-4070-989a-d960f2384a66" />
 
+Select where to install it and other info.
+I created a demos namespace for that.
+
 <img width="874" height="569" alt="Screenshot 2026-05-21 at 2 48 34 PM" src="https://github.com/user-attachments/assets/aec347cd-d734-4e98-9071-959f3fb3ab96" />
+
+Once installed successfully:
 
 <img width="543" height="253" alt="Screenshot 2026-05-21 at 2 49 29 PM" src="https://github.com/user-attachments/assets/a57576c2-9c04-4e22-8ff3-43e0efa93bda" />
 
-Then you can go and create the demo requests:
+Then you can go ahead and create the demo requests:
 
 <img width="1253" height="665" alt="Screenshot 2026-05-21 at 2 49 39 PM" src="https://github.com/user-attachments/assets/693bfbbc-bcfe-4559-ae23-c0f9c3fa243b" />
+
+Currently the index.yaml file contains 2 demos, you need to select one: either nginx or httpd and put the namespace as demos.
 
 <img width="1025" height="608" alt="Screenshot 2026-05-21 at 2 50 08 PM" src="https://github.com/user-attachments/assets/938a2d0f-d6f0-47d8-85e1-3a56ff320ea1" />
 

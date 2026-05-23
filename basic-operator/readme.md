@@ -2,7 +2,7 @@
 Steps to build and Create A basic demo operator
 ---
 
-# Building an OpenShift Operator with Operator SDK + OLM
+# Building an OpenShift Operator with Operator SDK + OLM for First Time
 
 ## 1. Install Required Tools
 
@@ -155,19 +155,19 @@ Build explicitly for Linux AMD64:
 ```bash id="16"
 podman build \
   --platform linux/amd64 \
-  -t quay.io/ooransa/osaora-demo-operator:v0.0.2 .
+  -t quay.io/ooransa/osaora-demo-operator:v0.0.3 .
 ```
 
 Push image:
 
 ```bash id="17"
-podman push quay.io/ooransa/osaora-demo-operator:v0.0.2
+podman push quay.io/ooransa/osaora-demo-operator:v0.0.3
 ```
 
 Verify architecture:
 
 ```bash id="18"
-podman inspect quay.io/ooransa/osaora-demo-operator:v0.0.2 | grep Architecture
+podman inspect quay.io/ooransa/osaora-demo-operator:v0.0.3 | grep Architecture
 ```
 
 Expected:
@@ -230,7 +230,7 @@ image: controller:latest
 with:
 
 ```yaml id="25"
-image: quay.io/ooransa/osaora-demo-operator:v0.0.2
+image: quay.io/ooransa/osaora-demo-operator:v0.0.3
 ```
 
 Also ensure:
@@ -290,13 +290,13 @@ Build bundle image:
 ```bash id="30"
 podman build \
   -f bundle.Dockerfile \
-  -t quay.io/ooransa/osaora-demo-operator-bundle:v0.0.2 .
+  -t quay.io/ooransa/osaora-demo-operator-bundle:v0.0.3 .
 ```
 
 Push:
 
 ```bash id="31"
-podman push quay.io/ooransa/osaora-demo-operator-bundle:v0.0.2
+podman push quay.io/ooransa/osaora-demo-operator-bundle:v0.0.3
 ```
 
 ---
@@ -317,15 +317,15 @@ Build index:
 
 ```bash id="33"
 opm index add \
-  --bundles quay.io/ooransa/osaora-demo-operator-bundle:v0.0.2 \
-  --tag quay.io/ooransa/osaora-demo-operator-index:v0.0.2 \
+  --bundles quay.io/ooransa/osaora-demo-operator-bundle:v0.0.3 \
+  --tag quay.io/ooransa/osaora-demo-operator-index:v0.0.3 \
   --container-tool podman
 ```
 
 Push index:
 
 ```bash id="34"
-podman push quay.io/ooransa/osaora-demo-operator-index:v0.0.2
+podman push quay.io/ooransa/osaora-demo-operator-index:v0.0.3
 ```
 
 ---
@@ -340,7 +340,7 @@ metadata:
   namespace: openshift-marketplace
 spec:
   sourceType: grpc
-  image: quay.io/ooransa/osaora-demo-operator-index:v0.0.2
+  image: quay.io/ooransa/osaora-demo-operator-index:v0.0.3
   displayName: Demo Request Operator
   publisher: Osama Oransa
 ```
@@ -374,6 +374,8 @@ Go to:
 ```text id="39"
 Operators → OperatorHub
 ```
+
+<img width="456" height="596" alt="Screenshot 2026-05-21 at 2 39 23 PM" src="https://github.com/user-attachments/assets/93b462e8-41b6-43c6-ab27-1df97221c813" />
 
 Find:
 
@@ -427,6 +429,9 @@ Apply:
 ```bash id="45"
 oc apply -f demorequest.yaml
 ```
+Or from the GUI directly:
+
+<img width="1025" height="608" alt="Screenshot 2026-05-21 at 2 50 08 PM" src="https://github.com/user-attachments/assets/938a2d0f-d6f0-47d8-85e1-3a56ff320ea1" />
 
 ---
 
@@ -457,7 +462,7 @@ image: controller:latest
 Correct:
 
 ```yaml id="48"
-image: quay.io/ooransa/osaora-demo-operator:v0.0.2
+image: quay.io/ooransa/osaora-demo-operator:v0.0.3
 ```
 
 ---
@@ -483,3 +488,111 @@ Ensure all Quay repositories are public:
 * index image
 
 Otherwise OpenShift cannot pull them.
+
+
+# Updating the OpenShift Operator
+
+## Optionally you can create additional APIs/CRD: Create API + Controller
+
+```
+operator-sdk create api \
+  --group demo \
+  --version v1alpha1 \
+  --kind DemoRequestNew \
+  --resource \
+  --controller
+```
+
+But if no need for more resources, modify the code in the controller, modify the main.go and the CSV.yaml file with the new version and container images or required roles/RBAC.
+
+Then build these images: 
+
+## Build bundle image:
+
+```
+podman build \
+  -f bundle.Dockerfile \
+  -t quay.io/ooransa/osaora-demo-operator-bundle:v0.0.3 .
+```
+
+Push:
+
+```
+podman push quay.io/ooransa/osaora-demo-operator-bundle:v0.0.3
+```
+
+---
+
+## Build Index Image
+
+⚠ Run from writable folder like `/tmp/opm-index`
+
+```
+cd /tmp
+
+mkdir -p opm-index
+
+cd opm-index
+```
+
+Build index:
+
+```
+opm index add \
+  --bundles quay.io/ooransa/osaora-demo-operator-bundle:v0.0.3 \
+  --tag quay.io/ooransa/osaora-demo-operator-index:v0.0.3 \
+  --container-tool podman
+```
+
+Push index:
+
+```
+podman push quay.io/ooransa/osaora-demo-operator-index:v0.0.3
+```
+
+## Build Operator Image
+
+⚠ IMPORTANT:
+OpenShift worker nodes are typically Linux AMD64. Mac builds can accidentally produce ARM64 images.
+
+Build explicitly for Linux AMD64:
+
+```
+podman build \
+  --platform linux/amd64 \
+  -t quay.io/ooransa/osaora-demo-operator:v0.0.3 .
+```
+
+Push image:
+
+```
+podman push quay.io/ooransa/osaora-demo-operator:v0.0.3
+```
+
+Verify architecture:
+
+```
+podman inspect quay.io/ooransa/osaora-demo-operator:v0.0.3 | grep Architecture
+```
+
+Expected:
+
+```
+"Architecture": "amd64"
+```
+
+## Re-install the operator reference the new index image:
+
+```
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: demo-operator-catalog
+  namespace: openshift-marketplace
+spec:
+  sourceType: grpc
+  image: quay.io/ooransa/osaora-demo-operator-index:v0.0.3
+  displayName: Demo Request Operator
+  publisher: Osama Oransa
+```
+

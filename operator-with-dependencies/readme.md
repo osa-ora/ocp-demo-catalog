@@ -94,8 +94,3 @@ Used when your operator depends on Kubernetes APIs or CRDs.
 * Ensures required CRDs exist in the cluster
 * Must match **exact API version available in the target cluster**
 * Does NOT install CRDs automatically
-
----
-
-
-If you want, I can also add a **diagram section (OLM install flow + dependency resolution)** or convert this into a polished GitHub README with badges and architecture diagram.

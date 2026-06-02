@@ -1,4 +1,4 @@
-# OpenShift Demo Operator
+# OpenShift Building Operator Demo
 ---
 
 In this demo, we built an operator that consumes an `index.yaml` file containing the list of available demos and their metadata. When the user requests a demo, the operator generates the required demo artifacts, based on the demo details as per the file content: 
